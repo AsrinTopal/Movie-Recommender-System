@@ -1,7 +1,11 @@
 # Movie Recommender System 🎥
 This project is a movie recommendation system that suggests movies based on user preferences. It consists of two main components:
 
-# MOVIE RECOMMENDER SYSTEM GIVE IT A TRY
+* **Pre-Trained Model:** The model has already been trained using movie metadata, and the preprocessed files are provided (**movie_list.pkl** and **similarity.pkl**).
+
+* **Web Application:** A Streamlit-based app where users can interactively select movies and get recommendations.
+
+# [MOVIE RECOMMENDER SYSTEM GIVE IT A TRY](https://movie-recommender-system-asrintopal.streamlit.app)
 ## Table of Contents
 - [Overview](#overview)
 - [Key Features](#key-features)
@@ -12,13 +16,13 @@ This project is a movie recommendation system that suggests movies based on user
 - [License](#license)
 
 ## Overview
-The Movie Recommender System is a user-friendly application designed to help movie enthusiasts discover new films tailored to their tastes. The system analyzes metadata such as genres, cast, crew, and keywords to provide personalized movie recommendations.
+The Movie Recommender System is a user-friendly application designed to help movie enthusiasts discover new films tailored to their tastes. Built with a pre-trained machine learning model, the system analyzes metadata such as genres, cast, crew, and keywords to provide personalized movie recommendations.
 
-The app uses a content-based filtering approach, ensuring high-quality suggestions based on the user's selected movie. The train.py script processes the movie metadata and generates the necessary files (movie_list.pkl and similarity.pkl), which are then used by the app for recommendations. Users must run the training script first to prepare the data before using the application.
+The app leverages a content-based filtering approach, ensuring high-quality suggestions based on the user's selected movie. By utilizing a pre-computed similarity matrix, the system efficiently delivers results without requiring re-training, making it quick and ready-to-use.
 
-The accompanying Streamlit web interface offers an intuitive experience, allowing users to explore recommendations, view movie posters, and sort results by rating, release date, or title. With seamless integration of the TMDB API, the app fetches detailed movie information, including posters, ratings, and descriptions, enhancing the user experience.
+The accompanying Streamlit web interface offers an intuitive experience, allowing users to explore recommendations, view movie posters, and sort results by rating, release date, or title. With a seamless integration of the TMDB API, the app also fetches detailed movie information, enhancing the user experience.
 
-Whether you're looking for your next favorite movie or exploring new genres, the Movie Recommender System is here to help!
+Whether you're looking for your next favorite movie or exploring new genres, the Movie Recommender System has got you covered!
 
 
 ## Key Features
@@ -29,6 +33,9 @@ Whether you're looking for your next favorite movie or exploring new genres, the
 ## Project Structure
 * **train.py:** Prepares and trains the model. You do not need to run this as the pre-trained files are already provided.
 * **app.py:** The main Streamlit app for user interaction.
+#### Pre-Trained Files:
+* movie_list.pkl: Preprocessed movie data with metadata tags.
+* similarity.pkl: Precomputed cosine similarity matrix.
 
 #### Data Files (Optional for re-training):
 * **tmdb_5000_movies.csv:** Dataset containing movie metadata.
@@ -42,7 +49,8 @@ Whether you're looking for your next favorite movie or exploring new genres, the
 * Displays the top 10 recommendations based on the trained model.
 *Includes sorting options: rating, release date, or title.
 #### Visual Layout:
-* Recommendations are shown in a card-style layout with posters, ratings, genres, and descriptions.\
+* Recommendations are shown in a card-style layout with posters, ratings, genres, and descriptions.
+
 
 ## Installation
 ### Prerequisites
@@ -65,23 +73,22 @@ cd movie-recommender-system
 pip install -r requirements.txt
 ```
 
-### Step 3: Train the data
-```
-python train.py
-```
-
-### Step 4: Run the Streamlit App
+### Step 3: Run the Streamlit App
 ```
 steamlit run app.py
 ```
 The app will launch in your browser. If it doesn't open automatically, navigate to http://localhost:8501 in your browser.
 
 ## App Screenshot
+![movie](https://github.com/user-attachments/assets/3f70e3de-08b3-47d1-a72c-e6d1309df2e1)
 
 ## Example Output
 ### Web App
 * Selected Movie: Displays the poster and details of the chosen movie.
 * Recommended Movies: Suggestions are shown with relevant details like poster, brief description, genres, ratings, and release dates.
+
+## Notes on Training
+If you wish to re-train the model, you can use train.py to process the data and generate the movie_list.pkl and similarity.pkl files. However, this is not necessary for running the app as the pre-trained files are already provided.
 
 ## Contributing
 
