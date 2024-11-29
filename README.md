@@ -80,7 +80,9 @@ steamlit run app.py
 The app will launch in your browser. If it doesn't open automatically, navigate to http://localhost:8501 in your browser.
 
 ## App Screenshot
-![movie](https://github.com/user-attachments/assets/3f70e3de-08b3-47d1-a72c-e6d1309df2e1)
+
+https://github.com/user-attachments/assets/31445aef-4a2e-4566-bc61-e190aa69b854
+
 
 ## Example Output
 ### Web App
