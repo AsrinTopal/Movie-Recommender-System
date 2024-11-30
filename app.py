@@ -17,22 +17,55 @@ def fetch_movie_details(movie_id):
         full_path = "https://via.placeholder.com/500x750?text=No+Image"
     return full_path, overview, release_date, rating, genres
 
+def fetch_streaming_platforms(movie_id, region="US"):
+    """
+    Fetch the streaming platform information for a movie based on its TMDB ID.
+    Returns a list of platform names the movie is available on.
+    """
+    api_key = "8265bd1679663a7ea12ac168da84d2e8"  # Replace with your TMDB API key
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}/watch/providers"
+    response = requests.get(url, params={"api_key": api_key})
+    
+    if response.status_code != 200:
+        return []  # Return empty list if the API call fails
+    
+    data = response.json()
+    if "results" in data and region in data["results"]:
+        platforms = data["results"][region].get("flatrate", [])
+        platform_names = [p["provider_name"] for p in platforms]  # Get the platform names
+        return platform_names
+    return []  # Return empty list if no platforms are found
+
 # Recommendation function
-def recommend(movie):
+def recommend(movie, platform_filter=None):
+    """
+    Generate movie recommendations and filter by selected platform.
+    """
     index = movies[movies['title'] == movie].index[0]
     distances = sorted(list(enumerate(similarity[index])), reverse=True, key=lambda x: x[1])
     recommended_movie_data = []
-    for i in distances[1:11]:  # Fetching 10 recommendations
+    
+    for i in distances[1:11]:  # Top 10 recommendations
         movie_id = movies.iloc[i[0]].movie_id
         poster, description, release_date, rating, genres = fetch_movie_details(movie_id)
+        streaming_platforms = fetch_streaming_platforms(movies.iloc[i[0]].movie_id)
+        
+        # Filter by platform if a platform filter is set
+        if platform_filter:
+            # Compare lowercase platform names to avoid case sensitivity issues
+            if platform_filter.lower() not in [p.lower() for p in streaming_platforms]:
+                continue  # Skip this movie if it's not available on the selected platform
+        
         recommended_movie_data.append({
             "title": movies.iloc[i[0]].title,
             "poster": poster,
             "description": description,
             "release_date": release_date,
             "rating": rating,
-            "genres": genres
+            "genres": genres,
+            "platforms": streaming_platforms if streaming_platforms else ["None"]
         })
+    
     return recommended_movie_data
 
 # Streamlit App
@@ -102,7 +135,7 @@ similarity = pickle.load(open('model/similarity.pkl', 'rb'))
 # Create two columns: one for the search and sort dropdowns, and one for the selected movie's poster
 col1, col2 = st.columns([4, 1])  # Split the layout into two equal columns
 
-# Movie selection and sorting dropdowns in the left column (col1)
+# Movie selection, sorting, and platform filter dropdowns in the left column (col1)
 with col1:
     # Dropdown for movie selection
     movie_list = movies['title'].values
@@ -118,6 +151,16 @@ with col1:
         ["Rating (Highest to Lowest)", "Release Date (Newest to Oldest)", "Title (Alphabetical)"],
         help="Choose how you'd like to sort the recommendations."
     )
+    
+    # Platform filter dropdown
+    platform_filter = st.selectbox(
+        "Filter by Platform:",
+        ["All", "Netflix", "Disney Plus", "Amazon Prime", "Hulu", "HBO Max"],
+        help="Select a streaming platform to filter recommendations."
+    )
+    # If "All" is selected, set platform_filter to None
+    if platform_filter == "All":
+        platform_filter = None
 
 # Fetch the poster for the selected movie
 selected_movie_index = movies[movies['title'] == selected_movie].index[0]
@@ -132,7 +175,7 @@ with col2:
 if st.button('Show Recommendations 🎬'):
     st.markdown("### ✨ Top 10 Recommendations for You:")
     st.markdown("---")
-    recommended_movie_data = recommend(selected_movie)
+    recommended_movie_data = recommend(selected_movie, platform_filter)
 
     # Sorting logic based on selected option
     if sort_option == "Rating (Highest to Lowest)":
@@ -145,21 +188,27 @@ if st.button('Show Recommendations 🎬'):
     # Display recommendations with card layout
     for movie in recommended_movie_data:
         with st.container():
-            col1, col2 = st.columns([1, 2])  # Two columns: poster (1) and details (2)
+            col1, col2 = st.columns([1, 2])
             with col1:
-                # Display image (No class_ argument here)
                 st.image(movie["poster"], use_container_width=True, caption=movie["title"])
             with col2:
                 st.markdown(f"**🎬 {movie['title']}**")
                 st.markdown(f"**⭐ Rating:** {movie['rating']} | **📅 Release Date:** {movie['release_date']}")
                 st.markdown(f"**🎭 Genres:** {', '.join(movie['genres'])}")
+                
+                # Display platform names beside the movie poster
+                platforms = ", ".join(movie["platforms"])
+                if platforms == "None":
+                    platforms = "None"
+                st.markdown(f"**📡 Available On:** {platforms}")
+                
                 st.markdown(f"*{movie['description']}*")
                 st.markdown("---")
 
 # Footer
 st.markdown(
     """
-    ---
+    --- 
     <div class="footer">
         Created By ASRIN TOPAL
     </div>
