@@ -49,23 +49,32 @@ def fetch_all_movie_data(movie_id):
 
 # Function to recommend movies based on the selected movie
 def recommend(movie, movies, similarity, platform_filter=None):
+    # Get the index of the selected movie
     index = movies[movies['title'] == movie].index[0]
+    
+    # Compute distances and get the top 10 most similar movies
     distances = sorted(list(enumerate(similarity[index])), key=lambda x: x[1], reverse=True)[1:11]
     
     recommended_movies = []
 
     with ThreadPoolExecutor() as executor:
-        futures = []
+        futures = {}
+        # Submit tasks with their corresponding index
         for i in distances:
             movie_id = movies.iloc[i[0]].movie_id
-            futures.append(executor.submit(fetch_all_movie_data, movie_id))
+            futures[executor.submit(fetch_all_movie_data, movie_id)] = i[0]
 
         for future in as_completed(futures):
+            original_index = futures[future]  # Get the index corresponding to the movie
             poster, description, release_date, rating, genres, cast, platforms = future.result()
+            
+            # Filter platforms if a platform filter is applied
             platforms = [p for p in platforms if platform_filter is None or p.lower() == platform_filter.lower()]
-            if platforms:
+            
+            # Append movie details only if platforms match or no filter is applied
+            if platforms or platform_filter is None:
                 recommended_movies.append({
-                    "title": movies.iloc[i[0]].title,
+                    "title": movies.iloc[original_index].title,
                     "rating": rating,
                     "release_date": release_date,
                     "genres": genres,
