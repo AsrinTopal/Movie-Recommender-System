@@ -41,8 +41,8 @@ def recommend(movie):
         print(new.iloc[i[0]].title)
 
 # Load datasets
-movies = pd.read_csv('tmdb_5000_movies.csv')
-credits = pd.read_csv('tmdb_5000_credits.csv')
+movies = pd.read_csv('data/tmdb_5000_movies.csv')
+credits = pd.read_csv('data/tmdb_5000_credits.csv')
 
 # Merge datasets on the title column
 movies = movies.merge(credits, on='title')
