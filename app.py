@@ -2,6 +2,7 @@ import pickle
 import streamlit as st
 import requests
 import time
+import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from utils import fetch_movie_details, fetch_movie_cast, fetch_streaming_platforms, fetch_all_movie_data, recommend
 
@@ -67,9 +68,25 @@ st.markdown(
 st.markdown('<div class="main-header">🎥 Movie Recommender System 🎥</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-header">Discover your next favorite movie with personalized recommendations!</div>', unsafe_allow_html=True)
 
+
+# Bölünmüş dosyaların yolu
+parts_dir = "model/similarity_parts"
+
+# Bölünmüş dosyaları birleştir ve yükle
+def load_similarity():
+    files = sorted([os.path.join(parts_dir, f) for f in os.listdir(parts_dir) if f.startswith("similarity_part_")])
+    similarity_data = b""
+    for file in files:
+        with open(file, "rb") as f:
+            similarity_data += f.read()
+    return pickle.loads(similarity_data)
+
+# similarity değişkenini yükle
+similarity = load_similarity()
+
+
 # Load data
 movies = pickle.load(open('model/movie_list.pkl', 'rb'))
-similarity = pickle.load(open('model/similarity.pkl', 'rb'))
 
 # Sidebar
 st.sidebar.title("About")
