@@ -69,10 +69,10 @@ st.markdown('<div class="main-header">🎥 Movie Recommender System 🎥</div>',
 st.markdown('<div class="sub-header">Discover your next favorite movie with personalized recommendations!</div>', unsafe_allow_html=True)
 
 
-# Bölünmüş dosyaların yolu
+# Splited path
 parts_dir = "model/similarity_parts"
 
-# Bölünmüş dosyaları birleştir ve yükle
+# Load Similarity
 def load_similarity():
     files = sorted([os.path.join(parts_dir, f) for f in os.listdir(parts_dir) if f.startswith("similarity_part_")])
     similarity_data = b""
@@ -81,11 +81,8 @@ def load_similarity():
             similarity_data += f.read()
     return pickle.loads(similarity_data)
 
-# similarity değişkenini yükle
-similarity = load_similarity()
-
-
 # Load data
+similarity = load_similarity()
 movies = pickle.load(open('model/movie_list.pkl', 'rb'))
 
 # Sidebar
